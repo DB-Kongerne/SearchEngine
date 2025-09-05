@@ -1,4 +1,5 @@
 ﻿using System;
+using Shared;
 
 namespace ConsoleSearch
 {
@@ -7,8 +8,8 @@ namespace ConsoleSearch
 
         public void Run()
         {
-            IDatabase db = GetDatabase();
-            SearchLogic mSearchLogic = new SearchLogic(db);
+            Shared.IDatabase db = GetDatabase();
+            SearchAPI.SearchLogic mSearchLogic = new SearchAPI.SearchLogic(db);
             Console.WriteLine("Console Search");
 
             while (true)
@@ -55,7 +56,7 @@ namespace ConsoleSearch
         }
 
 
-        private IDatabase GetDatabase()
+        private Shared.IDatabase GetDatabase()
         {
             Console.Write("Use SQLite (1) or Postgres (2) database?");
             string input = Console.ReadLine();

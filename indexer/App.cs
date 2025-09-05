@@ -11,7 +11,7 @@ namespace Indexer
     {
         public void Run()
         {
-            IDatabase db = GetDatabase();
+            Shared.IDatabase db = GetDatabase();
             Crawler crawler = new Crawler(db);
 
             var root = new DirectoryInfo(Config.FOLDER);
@@ -56,9 +56,9 @@ namespace Indexer
                 Console.WriteLine("Invalid number entered.");
             }
         }
-        
 
-        private IDatabase GetDatabase()
+
+        private Shared.IDatabase GetDatabase()
         {
             Console.Write("Use SQLite (1) or Postgres (2) database?");
             string input = Console.ReadLine();

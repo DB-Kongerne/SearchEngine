@@ -6,7 +6,7 @@ using Microsoft.Data.Sqlite;
 
 namespace ConsoleSearch
 {
-    public class DatabaseSqlite : IDatabase
+    public class DatabaseSqlite : Shared.IDatabase
     {
         private SqliteConnection _connection;
 
@@ -77,9 +77,9 @@ namespace ConsoleSearch
 
 
 
-       
 
-        private Dictionary<string, int> GetAllWords()
+
+        public Dictionary<string, int> GetAllWords()
         {
             Dictionary<string, int> res = new Dictionary<string, int>();
 
@@ -98,7 +98,7 @@ namespace ConsoleSearch
             }
             return res;
         }
-        
+
         public BEDocument GetDocDetails(int docId)
         {
             var selectCmd = _connection.CreateCommand();
@@ -186,5 +186,12 @@ namespace ConsoleSearch
             outIgnored = ignored;
             return res;
         }
+
+        // Stub for indexing methods
+        public int DocumentCounts => throw new NotImplementedException();
+        public void InsertDocument(BEDocument doc) { throw new NotImplementedException(); }
+        public void InsertWord(int id, string value) { throw new NotImplementedException(); }
+        public void InsertAllWords(Dictionary<string, int> words) { throw new NotImplementedException(); }
+        public void InsertAllOcc(int docId, ISet<int> wordIds) { throw new NotImplementedException(); }
     }
 }
