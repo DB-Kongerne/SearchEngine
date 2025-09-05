@@ -1,0 +1,122 @@
+@page "/search"
+@using Microsoft.AspNetCore.Components.Web
+@using SearchAPI
+@inject SearchLogic SearchLogic
+
+<PageTitle>Search Engine</PageTitle>
+
+<h1>Search Engine</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="input-group mb-3">
+            <input @bind="searchQuery" @bind:event="oninput" @onkeydown="@HandleKeyDown" 
+                   type="text" class="form-control" placeholder="Enter search terms..." aria-label="Search terms">
+            <button class="btn btn-primary" @onclick="ExecuteSearch">Search</button>
+        </div>
+        <div class="mb-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="caseSensitiveSwitch" 
+                       @onchange="ToggleCaseSensitivity" checked="@caseSensitive">
+                <label class="form-check-label" for="caseSensitiveSwitch">Case Sensitive</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (isSearching)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Searching...</span>
+        </div>
+    </div>
+}
+else if (searchResult != null)
+{
+    <div class="mt-4">
+        <h3>Search Results</h3>
+        <p>Found @searchResult.Hits documents in @searchResult.TimeUsed.TotalMilliseconds ms</p>
+        
+        @if (searchResult.Ignored.Count > 0)
+        {
+            <p>Ignored terms: @string.Join(", ", searchResult.Ignored)</p>
+        }
+        
+        @if (searchResult.DocumentHits.Count == 0)
+        {
+            <div class="alert alert-info" role="alert">
+                No documents found matching your search criteria.
+            </div>
+        }
+        else
+        {
+            <div class="list-group">
+                @foreach (var doc in searchResult.DocumentHits)
+                {
+                    <div class="list-group-item">
+                        <h5>@doc.Document.mUrl</h5>
+                        <p class="mb-1">Contains @doc.NoOfHits search terms</p>
+                        <p class="mb-1">Indexed: @doc.Document.mIdxTime</p>
+                        @if (doc.Missing.Count > 0)
+                        {
+                            <small class="text-muted">Missing terms: @string.Join(", ", doc.Missing)</small>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private string searchQuery = string.Empty;
+    private global::Shared.SearchResult? searchResult;
+    private bool isSearching = false;
+    private bool caseSensitive = true;
+    private string errorMessage = string.Empty;
+
+    private async Task ExecuteSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+            return;
+
+        errorMessage = string.Empty;
+        isSearching = true;
+
+        try
+        {
+            var query = searchQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            searchResult = await Task.Run(() => SearchLogic.Search(query, 10));
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Search error: {ex.Message}";
+        }
+        finally
+        {
+            isSearching = false;
+        }
+    }
+
+    private void ToggleCaseSensitivity(ChangeEventArgs e)
+    {
+        caseSensitive = (bool)e.Value;
+        SearchLogic.SetCaseSensitivity(caseSensitive);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ExecuteSearch();
+        }
+    }
+}
