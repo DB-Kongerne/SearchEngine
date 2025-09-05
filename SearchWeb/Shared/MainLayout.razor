@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Web
 
-<PageTitle>SearchWeb</PageTitle>
+<!-- Document Search Engine -->
 
 <div class="page">
     <div class="sidebar">
@@ -9,8 +10,13 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="/search">Search</a>
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <a href="/search">
+                <i class="oi oi-magnifying-glass me-1"></i>
+                Search
+            </a>
+            <a href="https://github.com/DB-Kongerne/SearchEngine" target="_blank">
+                <i class="oi oi-code me-1"></i> GitHub
+            </a>
         </div>
 
         <article class="content px-4">

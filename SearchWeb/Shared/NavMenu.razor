@@ -1,8 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@implements IDisposable
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">SearchWeb</a>
+        <a class="navbar-brand d-flex align-items-center" href="">
+            <i class="oi oi-document me-2" style="color: #FFFFFF;"></i>
+            <strong>Search Engine</strong>
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -18,17 +24,7 @@
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="search">
-                <span class="oi oi-magnifying-glass" aria-hidden="true"></span> Search
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                <span class="oi oi-search" aria-hidden="true"></span> Search
             </NavLink>
         </div>
     </nav>
@@ -36,11 +32,31 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private DotNetObjectReference<NavMenu>? objRef;
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; } = default!;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("initializeDotnetReference", objRef);
+        }
+    }
+
+    [JSInvokable]
+    public void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
     }
 }

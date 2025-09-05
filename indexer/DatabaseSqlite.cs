@@ -181,5 +181,120 @@ namespace Indexer
                 return -1;
             }
         }
+
+        // Search methods required by IDatabase
+        private Dictionary<string, int> mWords = null;
+
+        public List<int> GetWordIds(string[] query, out List<string> outIgnored)
+        {
+            if (mWords == null)
+                mWords = GetAllWords();
+            var res = new List<int>();
+            var ignored = new List<string>();
+
+            foreach (var aWord in query)
+            {
+                if (mWords.ContainsKey(aWord))
+                    res.Add(mWords[aWord]);
+                else
+                    ignored.Add(aWord);
+            }
+            outIgnored = ignored;
+            return res;
+        }
+
+        public BEDocument GetDocDetails(int docId)
+        {
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = $"SELECT * FROM document WHERE id = {docId}";
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var url = reader.GetString(1);
+                    var idxTime = reader.GetString(2);
+                    var creationTime = reader.GetString(3);
+
+                    return new BEDocument { mId = id, mUrl = url, mIdxTime = idxTime, mCreationTime = creationTime };
+                }
+            }
+            return null;
+        }
+
+        private string AsString(List<int> x) => $"({string.Join(',', x)})";
+
+        public List<KeyValuePair<int, int>> GetDocuments(List<int> wordIds)
+        {
+            var res = new List<KeyValuePair<int, int>>();
+
+            var sql = "SELECT docId, COUNT(wordId) as count FROM Occ WHERE ";
+            sql += "wordId in " + AsString(wordIds) + " GROUP BY docId ";
+            sql += "ORDER BY count DESC;";
+
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = sql;
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var docId = reader.GetInt32(0);
+                    var count = reader.GetInt32(1);
+
+                    res.Add(new KeyValuePair<int, int>(docId, count));
+                }
+            }
+
+            return res;
+        }
+
+        public List<int> getMissing(int docId, List<int> wordIds)
+        {
+            var sql = "SELECT wordId FROM Occ WHERE ";
+            sql += "wordId in " + AsString(wordIds) + " AND docId = " + docId;
+            sql += " ORDER BY wordId;";
+
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = sql;
+
+            List<int> present = new List<int>();
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var wordId = reader.GetInt32(0);
+                    present.Add(wordId);
+                }
+            }
+            var result = new List<int>(wordIds);
+            foreach (var w in present)
+                result.Remove(w);
+
+            return result;
+        }
+
+        public List<string> WordsFromIds(List<int> wordIds)
+        {
+            var sql = "SELECT name FROM word WHERE ";
+            sql += "id in " + AsString(wordIds);
+
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = sql;
+
+            List<string> result = new List<string>();
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var wordName = reader.GetString(0);
+                    result.Add(wordName);
+                }
+            }
+            return result;
+        }
     }
 }

@@ -1,20 +1,23 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using SearchWeb.Data;
+using Microsoft.JSInterop;
 using SearchAPI;
 using Shared;
+using SearchWeb.Shared;
+using SearchWeb.Pages;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 // Add SearchLogic and SQLite database
 var db = new ConsoleSearch.DatabaseSqlite();
 builder.Services.AddSingleton<IDatabase>(db);
 builder.Services.AddSingleton<SearchLogic>();
+
+// No need to register JSInvokable methods as they're static
 
 var app = builder.Build();
 

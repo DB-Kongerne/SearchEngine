@@ -1,0 +1,159 @@
+/* Yellow Theme for SearchWeb */
+:root {
+    --yellow-primary: #FFCC00;
+    --yellow-secondary: #FFEE99;
+    --yellow-light: #FFF6D6;
+    --yellow-dark: #CC9900;
+    --text-dark: #333333;
+    --text-light: #FFFFFF;
+    --accent: #FF9900;
+    --danger: #FF3333;
+    --success: #33CC33;
+    --info: #3399FF;
+}
+
+/* Global styles */
+body {
+    background-color: var(--yellow-light);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: var(--yellow-dark) !important;
+}
+
+.navbar-brand {
+    color: var(--text-light) !important;
+    font-weight: bold;
+}
+
+/* Sidebar styling */
+.sidebar {
+    background-color: var(--yellow-primary);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.nav-link {
+    color: var(--text-dark) !important;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    background-color: var(--yellow-secondary);
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background-color: var(--yellow-dark) !important;
+    color: var(--text-light) !important;
+    font-weight: bold;
+}
+
+/* Content area */
+.content {
+    padding: 1.5rem !important;
+}
+
+.content h1, .content h2, .content h3 {
+    color: var(--yellow-dark);
+    margin-bottom: 1rem;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: var(--yellow-dark) !important;
+    border-color: var(--yellow-dark) !important;
+    color: var(--text-light) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+
+/* Card and list styling */
+.card, .list-group-item {
+    border-color: var(--yellow-secondary);
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover, .list-group-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(204, 153, 0, 0.2);
+}
+
+.list-group-item {
+    background-color: var(--text-light);
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+}
+
+/* Form controls */
+.form-control {
+    border-color: var(--yellow-secondary);
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: var(--yellow-dark);
+    box-shadow: 0 0 0 0.25rem rgba(255, 204, 0, 0.25);
+}
+
+/* Switch control for case sensitivity */
+.form-check-input:checked {
+    background-color: var(--yellow-dark);
+    border-color: var(--yellow-dark);
+}
+
+/* Top row navigation */
+.top-row {
+    background-color: var(--yellow-secondary) !important;
+    border-bottom: 1px solid var(--yellow-primary) !important;
+}
+
+.top-row a {
+    color: var(--text-dark) !important;
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+.top-row a:hover {
+    color: var(--yellow-dark) !important;
+    text-decoration: underline;
+}
+
+/* Alerts */
+.alert-info {
+    background-color: var(--yellow-secondary);
+    color: var(--text-dark);
+    border-color: var(--yellow-primary);
+}
+
+.alert-danger {
+    background-color: #FFEBEE;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+/* Spinner */
+.spinner-border {
+    color: var(--yellow-dark);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--yellow-primary);
+    color: var(--text-dark);
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--yellow-secondary);
+}
