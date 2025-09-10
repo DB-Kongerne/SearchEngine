@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using SearchAPI;
 using Shared;
+using Shared.Database;
 using SearchWeb.Shared;
 using SearchWeb.Pages;
 
@@ -12,8 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-// Add SearchLogic and SQLite database
-var db = new ConsoleSearch.DatabaseSqlite();
+// Add SearchLogic and database using the DatabaseFactory
+var db = DatabaseFactory.CreateDatabase(DatabaseFactory.DatabaseType.Sqlite);
 builder.Services.AddSingleton<IDatabase>(db);
 builder.Services.AddSingleton<SearchLogic>();
 

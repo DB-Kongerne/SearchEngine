@@ -1,56 +1,34 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Shared;
 using Shared.Model;
 using Microsoft.Data.Sqlite;
 
-namespace ConsoleSearch
+namespace Shared.Database
 {
-    public class DatabaseSqlite : Shared.IDatabase
+    public class DatabaseSqlite : IDatabase
     {
-        private SqliteConnection _connection;
-
-        private Dictionary<string, int> mWords = null;
+        protected SqliteConnection _connection;
+        protected Dictionary<string, int> mWords = null;
 
         public DatabaseSqlite()
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder();
-
             connectionStringBuilder.DataSource = Paths.SQLITE_DATABASE;
-
-
             _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
-
             _connection.Open();
-
-
         }
 
-        private void Execute(string sql)
+        protected void Execute(string sql)
         {
             var cmd = _connection.CreateCommand();
             cmd.CommandText = sql;
             cmd.ExecuteNonQuery();
         }
 
-
-
-
-
         // key is the id of the document, the value is number of search words in the document
         public List<KeyValuePair<int, int>> GetDocuments(List<int> wordIds)
         {
             var res = new List<KeyValuePair<int, int>>();
-
-            /* Example sql statement looking for doc id's that
-               contain words with id 2 and 3
-            
-               SELECT docId, COUNT(wordId) as count
-                 FROM Occ
-                WHERE wordId in (2,3)
-             GROUP BY docId
-             ORDER BY COUNT(wordId) DESC 
-             */
 
             var sql = "SELECT docId, COUNT(wordId) as count FROM Occ where ";
             sql += "wordId in " + AsString(wordIds) + " GROUP BY docId ";
@@ -65,7 +43,6 @@ namespace ConsoleSearch
                 {
                     var docId = reader.GetInt32(0);
                     var count = reader.GetInt32(1);
-
                     res.Add(new KeyValuePair<int, int>(docId, count));
                 }
             }
@@ -73,11 +50,7 @@ namespace ConsoleSearch
             return res;
         }
 
-        private string AsString(List<int> x) => $"({string.Join(',', x)})";
-
-
-
-
+        protected string AsString(List<int> x) => $"({string.Join(',', x)})";
 
         public Dictionary<string, int> GetAllWords()
         {
@@ -92,7 +65,6 @@ namespace ConsoleSearch
                 {
                     var id = reader.GetInt32(0);
                     var w = reader.GetString(1);
-
                     res.Add(w, id);
                 }
             }
@@ -119,8 +91,6 @@ namespace ConsoleSearch
             return null;
         }
 
-        /* Return a list of id's for words; all them among wordIds, but not present in the document
-         */
         public List<int> getMissing(int docId, List<int> wordIds)
         {
             var sql = "SELECT wordId FROM Occ where ";
@@ -144,7 +114,6 @@ namespace ConsoleSearch
             foreach (var w in present)
                 result.Remove(w);
 
-
             return result;
         }
 
@@ -162,8 +131,8 @@ namespace ConsoleSearch
             {
                 while (reader.Read())
                 {
-                    var wordId = reader.GetString(0);
-                    result.Add(wordId);
+                    var wordName = reader.GetString(0);
+                    result.Add(wordName);
                 }
             }
             return result;
@@ -187,11 +156,11 @@ namespace ConsoleSearch
             return res;
         }
 
-        // Stub for indexing methods
-        public int DocumentCounts => throw new NotImplementedException();
-        public void InsertDocument(BEDocument doc) { throw new NotImplementedException(); }
-        public void InsertWord(int id, string value) { throw new NotImplementedException(); }
-        public void InsertAllWords(Dictionary<string, int> words) { throw new NotImplementedException(); }
-        public void InsertAllOcc(int docId, ISet<int> wordIds) { throw new NotImplementedException(); }
+        // Default implementations for indexing methods
+        public virtual int DocumentCounts => throw new NotImplementedException();
+        public virtual void InsertDocument(BEDocument doc) { throw new NotImplementedException(); }
+        public virtual void InsertWord(int id, string value) { throw new NotImplementedException(); }
+        public virtual void InsertAllWords(Dictionary<string, int> words) { throw new NotImplementedException(); }
+        public virtual void InsertAllOcc(int docId, ISet<int> wordIds) { throw new NotImplementedException(); }
     }
 }
